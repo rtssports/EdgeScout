@@ -23,4 +23,4 @@ Features
 
 Powered by The Odds API. Bring your own API key — free tier available at the-odds-api.com.
 
-Listed at https://rtssports.github.io/edgescout
+Listed at https://rtssports.github.io/EdgeScout/
