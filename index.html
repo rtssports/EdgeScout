@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EdgeScout Pro v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080d;--s1:#0b0e15;--s2:#10141e;--s3:#161c28;--bd:#1c2535;
+  --green:#00e5a0;--blue:#4d9fff;--amber:#ffc94d;--red:#ff4d6d;--purple:#b57bee;--cyan:#00d4ff;
+  --txt:#dde4f0;--muted:#3d5068;--muted2:#5d7490;
+}
+html,body{min-height:100vh}
+body{background:var(--bg);color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.5}
+.app{min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 90% 25% at 50% -2%,rgba(0,229,160,.05) 0%,transparent 55%),
+    radial-gradient(ellipse 35% 55% at 98% 35%,rgba(77,159,255,.03) 0%,transparent 50%),
+    radial-gradient(ellipse 25% 35% at 2% 85%,rgba(181,123,238,.03) 0%,transparent 50%)}
+
+/* NAV */
+.nav{display:flex;align-items:stretch;padding:0 24px;border-bottom:1px solid var(--bd);
+  background:rgba(6,8,13,.92);backdrop-filter:blur(16px);position:sticky;top:0;z-index:200;min-height:52px}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.3px;
+  color:var(--green);display:flex;align-items:center;margin-right:20px;white-space:nowrap}
+.logo em{color:var(--txt);font-style:normal}
+.logo sup{font-size:8px;color:var(--purple);font-weight:700;letter-spacing:1px;margin-left:2px}
+.nav-tabs{display:flex;flex:1;overflow-x:auto}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{padding:0 14px;border:none;background:transparent;color:var(--muted2);
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.5px;
+  cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;display:flex;align-items:center}
+.ntab:hover{color:var(--txt)}
+.ntab.on{color:var(--green);border-bottom-color:var(--green)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:10px;padding-left:12px}
+.rbadge{font-size:9px;color:var(--muted2);background:var(--s2);border:1px solid var(--bd);padding:3px 9px;border-radius:12px}
+.rbadge b{color:var(--amber)}
+
+/* SETTINGS */
+.cfg{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.f{display:flex;flex-direction:column;gap:4px}
+.lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+input,select{background:var(--bg);border:1px solid var(--bd);border-radius:4px;color:var(--txt);
+  font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 10px;outline:none;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--green)}
+select option{background:var(--s2)}
+.klink{font-size:9px;color:var(--blue);text-decoration:none;margin-top:2px}
+.klink:hover{color:var(--green)}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{padding:4px 11px;border-radius:16px;border:1px solid var(--bd);background:transparent;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .12s}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.chip.on{background:rgba(0,229,160,.08);border-color:var(--green);color:var(--green)}
+.chip.mkt{border-color:var(--bd);color:var(--muted2)}
+.chip.mkt.on{background:rgba(77,159,255,.08);border-color:var(--blue);color:var(--blue)}
+.run{padding:7px 20px;background:var(--green);color:#000;border:none;border-radius:4px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all .12s;white-space:nowrap;align-self:flex-end}
+.run:hover{background:#00ffb3;transform:translateY(-1px)}
+.run:disabled{background:var(--bd);color:var(--muted);cursor:not-allowed;transform:none}
+
+/* BODY */
+.body{padding:20px 24px}
+.panel{display:none}
+.panel.on{display:block}
+
+/* PROB ENGINE PANEL */
+.prob-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.filter-input{width:220px}
+.sort-sel{width:180px}
+.export-btn{padding:6px 16px;background:transparent;border:1px solid var(--bd);border-radius:4px;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .12s;margin-left:auto}
+.export-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:7px;margin-bottom:24px}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--s2);border-bottom:1px solid var(--bd)}
+th{padding:8px 11px;text-align:left;font-size:8px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--muted2)}
+th.sorted{color:var(--green)}
+tbody tr{border-bottom:1px solid rgba(28,37,53,.8);transition:background .08s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.012)}
+td{padding:9px 11px;vertical-align:middle}
+.clickrow{cursor:pointer}
+.game{font-weight:500;color:var(--txt);font-size:11px}
+.mkt-tag{font-size:9px;color:var(--muted2);display:block;margin-top:1px}
+.dt{color:var(--muted2);font-size:10px;white-space:nowrap}
+.outcome-name{font-weight:500;font-size:11px}
+.point{color:var(--muted2);font-size:10px}
+.book-tag{display:inline-block;padding:1px 6px;border-radius:3px;background:var(--s2);border:1px solid var(--bd);font-size:10px}
+.odds-val{font-weight:600;color:var(--amber);font-size:11px}
+
+/* PROB CELLS */
+.prob-cell{display:flex;flex-direction:column;gap:1px}
+.pm{font-size:10px;font-weight:600}
+.pm-add{color:var(--blue)}
+.pm-mul{color:var(--cyan)}
+.pm-pow{color:var(--purple)}
+.pm-pin{color:var(--green)}
+.pm-label{font-size:8px;color:var(--muted);letter-spacing:.5px}
+
+/* EV PILLS */
+.ev-hot{display:inline-block;padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px;background:rgba(0,229,160,.18);color:var(--green)}
+.ev-good{display:inline-block;padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px;background:rgba(0,200,120,.1);color:#00c87a}
+.ev-low{display:inline-block;padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px;background:rgba(255,201,77,.1);color:var(--amber)}
+.ev-neg{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;color:var(--muted2)}
+.arb-pill{display:inline-block;padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px;background:rgba(181,123,238,.18);color:var(--purple)}
+
+/* METHOD LEGEND */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:var(--s1);border:1px solid var(--bd);border-radius:6px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted2)}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:7px;padding:14px 16px}
+.sc-l{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.sc-v{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
+.sc-v.g{color:var(--green)}.sc-v.r{color:var(--red)}.sc-v.a{color:var(--amber)}.sc-v.p{color:var(--purple)}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.st{font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
+.badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(0,229,160,.1);color:var(--green)}
+.badge.b{background:rgba(77,159,255,.1);color:var(--blue)}
+.badge.p{background:rgba(181,123,238,.1);color:var(--purple)}
+.badge.a{background:rgba(255,201,77,.1);color:var(--amber)}
+.note{font-size:9px;color:var(--muted2);margin-bottom:12px;line-height:1.7}
+.note b{color:var(--blue)}
+
+/* KELLY PANEL */
+.kelly-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kcard{background:var(--s1);border:1px solid var(--bd);border-radius:7px;padding:20px}
+.kcard h3{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:14px}
+.kfields{display:flex;flex-direction:column;gap:9px}
+.kfields input,.kfields select{width:100%}
+.kresult{margin-top:14px;padding:12px;background:var(--bg);border:1px solid var(--bd);border-radius:5px}
+.kr-l{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.kr-v{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--green)}
+.kr-s{font-size:10px;color:var(--muted2);margin-top:3px}
+.kbtn{width:100%;margin-top:10px;padding:8px;background:var(--s2);color:var(--txt);
+  border:1px solid var(--bd);border-radius:4px;font-family:'Syne',sans-serif;font-weight:700;
+  font-size:12px;cursor:pointer;transition:all .12s}
+.kbtn:hover{border-color:var(--green);color:var(--green)}
+.formula{background:var(--bg);border:1px solid var(--bd);border-radius:4px;padding:9px 12px;
+  font-size:12px;color:var(--amber);margin:9px 0;letter-spacing:.5px}
+
+/* TRACKER */
+.tc{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end}
+.add-btn{padding:7px 18px;background:var(--green);color:#000;border:none;border-radius:4px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;align-self:flex-end}
+.add-btn:hover{background:#00ffb3}
+.ob{padding:3px 8px;border-radius:3px;border:1px solid var(--bd);background:transparent;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .1s}
+.ob.won{border-color:var(--green);color:var(--green);background:rgba(0,229,160,.08)}
+.ob.lost{border-color:var(--red);color:var(--red);background:rgba(255,77,109,.08)}
+.ob.push{border-color:var(--amber);color:var(--amber);background:rgba(255,201,77,.08)}
+.del{padding:3px 8px;border-radius:3px;border:1px solid rgba(255,77,109,.2);background:transparent;color:var(--red);font-size:10px;cursor:pointer}
+.del:hover{background:rgba(255,77,109,.08)}
+.pp{color:var(--green);font-weight:600}.pn{color:var(--red);font-weight:600}
+.div{height:1px;background:var(--bd);margin:16px 0}
+
+/* MISC */
+.empty{text-align:center;padding:48px 20px;color:var(--muted2)}
+.empty .ico{font-size:32px;margin-bottom:9px}
+.empty p{font-size:11px;line-height:1.8}
+.err{background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);border-radius:5px;padding:10px 14px;color:var(--red);margin-bottom:14px;font-size:11px}
+.sw{display:flex;align-items:center;gap:10px;color:var(--muted2);padding:40px 0;font-size:11px}
+.spin{width:14px;height:14px;border:2px solid var(--bd);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.bks{display:flex;gap:4px;flex-wrap:wrap}
+.bk{display:flex;flex-direction:column;align-items:center;padding:3px 6px;border-radius:4px;border:1px solid var(--bd);background:var(--s1);min-width:46px}
+.bk.best{border-color:var(--green);background:rgba(0,229,160,.06)}
+.bk .bn{font-size:8px;color:var(--muted2)}
+.bk.best .bn{color:var(--green)}
+.bk .bp{font-size:11px;font-weight:600;color:var(--txt)}
+.bk.best .bp{color:var(--green)}
+@media(max-width:720px){.kelly-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- NAV -->
+<div class="nav">
+  <div class="logo">EDGE<em>SCOUT</em><sup>PRO</sup></div>
+  <div class="nav-tabs">
+    <button class="ntab on" onclick="showPanel('prob')">🧮 Prob Engine</button>
+    <button class="ntab" onclick="showPanel('ev')">📈 +EV Finder</button>
+    <button class="ntab" onclick="showPanel('arb')">⚡ Arbitrage</button>
+    <button class="ntab" onclick="showPanel('screen')">📊 Odds Screen</button>
+    <button class="ntab" onclick="showPanel('kelly')">⚗️ Kelly Calc</button>
+    <button class="ntab" onclick="showPanel('tracker')">📋 Bet Tracker</button>
+  </div>
+  <div class="nav-r">
+    <div class="rbadge hidden" id="req-disp">Requests left: <b id="req-cnt">—</b></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="cfg">
+  <div class="f">
+    <label class="lbl">Odds API Key</label>
+    <input type="password" id="api-key" placeholder="Paste your key…" style="width:260px"/>
+    <a class="klink" href="https://the-odds-api.com" target="_blank">→ Free key at the-odds-api.com</a>
+  </div>
+  <div class="f">
+    <label class="lbl">Min EV %</label>
+    <input type="number" id="min-ev" value="1" min="0" step="0.5" style="width:70px"/>
+  </div>
+  <div class="f">
+    <label class="lbl">Bankroll ($)</label>
+    <input type="number" id="bankroll" value="1000" min="1" step="100" style="width:90px"/>
+  </div>
+  <div class="f">
+    <label class="lbl">Sports</label>
+    <div class="chips" id="sport-chips"></div>
+  </div>
+  <div class="f">
+    <label class="lbl">Markets</label>
+    <div class="chips" id="mkt-chips"></div>
+  </div>
+  <button class="run" id="run-btn" onclick="runScan()">▶ Run Scan</button>
+</div>
+
+<!-- BODY -->
+<div class="body">
+<div class="err hidden" id="err-box"></div>
+<div class="sw hidden" id="loading"><div class="spin"></div><span id="load-txt">Fetching…</span></div>
+
+<!-- PROB ENGINE -->
+<div class="panel on" id="panel-prob">
+  <div class="empty" id="prob-start"><div class="ico">🧮</div><p>The Probability Engine calculates true fair probabilities<br/>using 4 de-vig methods simultaneously.<br/><br/>Enter your API key, select markets, and hit Run Scan.</p></div>
+  <div class="hidden" id="prob-content">
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>Pinnacle Sharp (de-vigged Pinnacle line)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div>Additive (vig removed evenly)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div>Multiplicative (vig removed proportionally)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div>Power (corrects favorite-longshot bias)</div>
+    </div>
+    <div class="prob-toolbar">
+      <input class="filter-input" type="text" id="prob-filter" placeholder="Filter by game, outcome, market…" oninput="filterProb()"/>
+      <select id="prob-sort" onchange="renderProb()">
+        <option value="game">Sort by game</option>
+        <option value="mkt">Sort by market</option>
+        <option value="vigor">Sort by vig (high→low)</option>
+      </select>
+      <button class="export-btn" onclick="exportCSV('prob')">⬇ Export CSV</button>
+    </div>
+    <div class="sh"><div class="st">True Probability Engine</div><span class="badge b" id="prob-badge">0 outcomes</span></div>
+    <p class="note">All 4 de-vig methods shown per outcome. <b>Pinnacle</b> is most reliable when available. Use <b>Power</b> as fallback — it corrects for books shading longshots.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="setSortProb('game')">Game / Market</th>
+          <th onclick="setSortProb('time')">Time</th>
+          <th>Outcome</th>
+          <th>Ref Book</th>
+          <th>Market Odds</th>
+          <th>Implied Prob</th>
+          <th>Vig %</th>
+          <th>📌 Pinnacle</th>
+          <th>➕ Additive</th>
+          <th>✖ Multiplicative</th>
+          <th>⚡ Power</th>
+        </tr></thead>
+        <tbody id="prob-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- +EV -->
+<div class="panel" id="panel-ev">
+  <div class="empty" id="ev-start"><div class="ico">📈</div><p>Run a scan to find positive expected value bets<br/>across all selected markets and books.</p></div>
+  <div class="hidden" id="ev-content">
+    <div class="prob-toolbar">
+      <input class="filter-input" type="text" id="ev-filter" placeholder="Filter results…" oninput="filterEV()"/>
+      <select id="ev-method" onchange="renderEV()" style="width:200px">
+        <option value="pin">Pinnacle reference</option>
+        <option value="add">Additive de-vig</option>
+        <option value="mul">Multiplicative de-vig</option>
+        <option value="pow" selected>Power method</option>
+      </select>
+      <button class="export-btn" onclick="exportCSV('ev')">⬇ Export CSV</button>
+    </div>
+    <div class="sh"><div class="st">Positive EV Bets</div><span class="badge" id="ev-badge">0 found</span></div>
+    <p class="note">EV calculated using selected probability method. <b>Click any row</b> to send to Bet Tracker. Kelly stake = Half Kelly.</p>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Game / Market</th><th>Time</th><th>Outcome</th><th>Book</th>
+        <th>Odds</th><th>Fair Prob</th><th>EV %</th><th>Kelly Stake</th>
+      </tr></thead><tbody id="ev-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ARB -->
+<div class="panel" id="panel-arb">
+  <div class="empty" id="arb-start"><div class="ico">⚡</div><p>Run a scan to detect arbitrage opportunities<br/>across all selected markets.</p></div>
+  <div class="hidden" id="arb-content">
+    <div class="prob-toolbar">
+      <button class="export-btn" onclick="exportCSV('arb')" style="margin-left:0">⬇ Export CSV</button>
+    </div>
+    <div class="sh"><div class="st">Arbitrage Opportunities</div><span class="badge p" id="arb-badge">0 found</span></div>
+    <p class="note">Guaranteed profit regardless of outcome. Stakes shown for your bankroll. Act fast — arb windows close in seconds.</p>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Game</th><th>Market</th><th>Time</th><th>Leg 1</th><th>Leg 2</th><th>Arb %</th><th>Guaranteed Profit</th>
+      </tr></thead><tbody id="arb-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN -->
+<div class="panel" id="panel-screen">
+  <div class="empty" id="screen-start"><div class="ico">📊</div><p>Run a scan to compare odds across all books and markets.</p></div>
+  <div class="hidden" id="screen-content">
+    <div class="prob-toolbar">
+      <input class="filter-input" type="text" id="screen-filter" placeholder="Filter…" oninput="filterScreen()"/>
+      <button class="export-btn" onclick="exportCSV('screen')">⬇ Export CSV</button>
+    </div>
+    <div class="sh"><div class="st">Sportsbook Screen</div><span class="badge b" id="screen-badge">0 lines</span></div>
+    <p class="note">Best odds in <b style="color:var(--green)">green</b> across all markets. Sorted best → worst per book.</p>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Game</th><th>Market</th><th>Outcome</th><th>Odds by Book</th>
+      </tr></thead><tbody id="screen-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- KELLY -->
+<div class="panel" id="panel-kelly">
+  <div class="kelly-grid">
+    <div class="kcard">
+      <h3>⚗️ Kelly Criterion Calculator</h3>
+      <div class="kfields">
+        <div class="f"><label class="lbl">Your Odds (American)</label><input type="number" id="k-odds" placeholder="-148 or +220" oninput="calcKelly()"/></div>
+        <div class="f"><label class="lbl">True Win Probability (%)</label><input type="number" id="k-prob" placeholder="54.2" min="0.1" max="99.9" step="0.1" oninput="calcKelly()"/></div>
+        <div class="f"><label class="lbl">De-vig Method Used</label>
+          <select id="k-method" onchange="calcKelly()">
+            <option value="pin">Pinnacle Sharp</option>
+            <option value="add">Additive</option>
+            <option value="mul">Multiplicative</option>
+            <option value="pow" selected>Power (recommended)</option>
+          </select>
+        </div>
+        <div class="f"><label class="lbl">Bankroll ($)</label><input type="number" id="k-bank" placeholder="1000" oninput="calcKelly()"/></div>
+        <div class="f"><label class="lbl">Kelly Fraction</label>
+          <select id="k-frac" onchange="calcKelly()">
+            <option value="1">Full Kelly (aggressive)</option>
+            <option value="0.5" selected>Half Kelly (recommended)</option>
+            <option value="0.25">Quarter Kelly (conservative)</option>
+            <option value="0.1">Tenth Kelly (ultra-safe)</option>
+          </select>
+        </div>
+      </div>
+      <div class="kresult">
+        <div class="kr-l">Recommended Stake</div>
+        <div class="kr-v" id="kr-stake">—</div>
+        <div class="kr-s" id="kr-sub">Enter values above</div>
+      </div>
+      <button class="kbtn" onclick="sendKellyToTracker()">+ Send to Bet Tracker</button>
+    </div>
+    <div class="kcard">
+      <h3>📖 De-vig Methods Explained</h3>
+      <p style="font-size:10px;color:var(--muted2);line-height:1.8;margin-bottom:10px">Four methods for removing bookmaker vig to find true probabilities:</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div><div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:3px">📌 Pinnacle Sharp</div><div style="font-size:10px;color:var(--muted2);line-height:1.7">Uses Pinnacle's de-vigged line directly. Most reliable — Pinnacle is the world's sharpest book and sets the market. Best when Pinnacle has the market.</div></div>
+        <div><div style="font-size:10px;font-weight:700;color:var(--blue);margin-bottom:3px">➕ Additive</div><div style="font-size:10px;color:var(--muted2);line-height:1.7">Subtracts vig equally from each outcome's implied probability. Simple, fast. Works well for balanced 2-way markets. Underestimates longshot true probability.</div></div>
+        <div><div style="font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:3px">✖ Multiplicative</div><div style="font-size:10px;color:var(--muted2);line-height:1.7">Scales each implied probability by the total overround. More accurate than additive for asymmetric markets. Standard industry approach.</div></div>
+        <div><div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:3px">⚡ Power</div><div class="formula" style="margin:4px 0;font-size:10px">p_true = p_implied ^ (1/k), solve Σp=1</div><div style="font-size:10px;color:var(--muted2);line-height:1.7">Iteratively solves for exponent k that normalizes probabilities. Corrects favorite-longshot bias — books pad longshot prices, Power accounts for this. Most accurate for props and multi-outcome markets.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKER -->
+<div class="panel" id="panel-tracker">
+  <div class="stats-row" id="tracker-stats"></div>
+  <div class="sh" style="margin-bottom:12px"><div class="st">Log a Bet</div></div>
+  <div class="tc">
+    <div class="f"><label class="lbl">Bet Description</label><input type="text" id="t-game" placeholder="e.g. Pacers ML" style="width:190px"/></div>
+    <div class="f"><label class="lbl">Book</label><input type="text" id="t-book" placeholder="DraftKings" style="width:100px"/></div>
+    <div class="f"><label class="lbl">Market</label><input type="text" id="t-mkt" placeholder="h2h" style="width:80px"/></div>
+    <div class="f"><label class="lbl">Odds</label><input type="number" id="t-odds" placeholder="-148" style="width:80px"/></div>
+    <div class="f"><label class="lbl">Stake ($)</label><input type="number" id="t-stake" placeholder="50" style="width:80px"/></div>
+    <div class="f"><label class="lbl">EV %</label><input type="number" id="t-ev" placeholder="2.4" step="0.1" style="width:70px"/></div>
+    <div class="f"><label class="lbl">Method</label><input type="text" id="t-method" placeholder="Power" style="width:90px"/></div>
+    <button class="add-btn" onclick="addBet()">+ Log</button>
+  </div>
+  <div class="div"></div>
+  <div class="sh"><div class="st">Bet History</div><span class="badge" id="tracker-badge">0 bets</span>
+    <button class="export-btn" onclick="exportCSV('tracker')" style="margin-left:auto">⬇ Export CSV</button>
+  </div>
+  <div class="empty" id="tracker-empty"><div class="ico">📋</div><p>No bets logged yet.<br/>Click any +EV row to auto-fill, or log manually above.</p></div>
+  <div class="tbl-wrap hidden" id="tracker-tbl">
+    <table><thead><tr>
+      <th>Date</th><th>Bet</th><th>Book</th><th>Market</th><th>Odds</th><th>Stake</th><th>EV%</th><th>Method</th><th>Result</th><th>P&amp;L</th><th></th>
+    </tr></thead><tbody id="tracker-tbody"></tbody></table>
+  </div>
+</div>
+
+</div><!-- /body -->
+</div><!-- /app -->
+
+<script>
+// ══ CONFIG ══════════════════════════════════════════════════════════════════
+const SHARP_BOOKS = ["pinnacle","circa","bookmaker"];
+const ALL_BOOKS   = ["draftkings","fanduel","betmgm","caesars","pointsbet","bet365","betrivers","unibet","superbook","pinnacle","circa","bookmaker"];
+const SHORT = {draftkings:"DK",fanduel:"FD",betmgm:"MGM",caesars:"CZR",pointsbet:"PB",
+  bet365:"B365",betrivers:"BR",unibet:"UNI",superbook:"SB",pinnacle:"PIN",circa:"CIR",bookmaker:"BM"};
+const SPORTS = [
+  {key:"americanfootball_nfl",label:"🏈 NFL"},
+  {key:"basketball_nba",label:"🏀 NBA"},
+  {key:"baseball_mlb",label:"⚾ MLB"},
+  {key:"icehockey_nhl",label:"🏒 NHL"},
+  {key:"soccer_epl",label:"⚽ EPL"},
+  {key:"americanfootball_ncaaf",label:"🏈 NCAAF"},
+  {key:"basketball_ncaab",label:"🏀 NCAAB"},
+];
+const MARKETS = [
+  {key:"h2h",       label:"Moneyline"},
+  {key:"spreads",   label:"Spreads"},
+  {key:"totals",    label:"Totals"},
+  {key:"player_props", label:"Player Props"},
+  {key:"team_totals",  label:"Team Props"},
+];
+const MKT_LABELS = {h2h:"Moneyline",spreads:"Spread",totals:"Total",player_props:"Player Prop",team_totals:"Team Total"};
+
+let selectedSports  = ["basketball_nba"];
+let selectedMarkets = ["h2h","spreads","totals"];
+let bets            = JSON.parse(localStorage.getItem("es2_bets") || "[]");
+
+// Raw scan data
+let rawProb=[], rawEV=[], rawArb=[], rawScreen=[];
+
+// ══ INIT CHIPS ══════════════════════════════════════════════════════════════
+function mkChips(items, selected, el, cls){
+  items.forEach(s=>{
+    const b=document.createElement("button");
+    b.className=`chip ${cls}`+(selected.includes(s.key)?" on":"");
+    b.textContent=s.label;
+    b.dataset.key=s.key;
+    b.onclick=()=>{
+      const arr = cls==="mkt" ? selectedMarkets : selectedSports;
+      if(arr.includes(s.key)){arr.splice(arr.indexOf(s.key),1);b.classList.remove("on")}
+      else{arr.push(s.key);b.classList.add("on")}
+    };
+    document.getElementById(el).appendChild(b);
+  });
+}
+mkChips(SPORTS,  selectedSports,  "sport-chips", "");
+mkChips(MARKETS, selectedMarkets, "mkt-chips",  "mkt");
+
+// ══ MATH ════════════════════════════════════════════════════════════════════
+function toDec(a){ return a>0 ? a/100+1 : 100/Math.abs(a)+1 }
+function toImpl(a){ return 1/toDec(a) }
+function fmtAm(n){ return n>0 ? `+${n}` : `${n}` }
+function pct(n){ return (n*100).toFixed(2)+"%" }
+
+// Additive de-vig: subtract overround equally
+function devigAdd(probs){
+  const vig = probs.reduce((a,b)=>a+b,0) - 1;
+  const fair = probs.map(p => p - vig/probs.length);
+  return fair.map(p=>Math.max(0,p));
+}
+
+// Multiplicative de-vig: divide by overround
+function devigMul(probs){
+  const total = probs.reduce((a,b)=>a+b,0);
+  return probs.map(p=>p/total);
+}
+
+// Power de-vig: find k such that sum(p^(1/k))=1 via binary search
+function devigPow(probs){
+  const total = probs.reduce((a,b)=>a+b,0);
+  if(Math.abs(total-1)<1e-9) return probs; // already fair
+  let lo=0.5, hi=3.0;
+  for(let i=0;i<64;i++){
+    const mid=(lo+hi)/2;
+    const s=probs.reduce((a,p)=>a+Math.pow(p,1/mid),0);
+    if(s>1) hi=mid; else lo=mid;
+  }
+  const k=(lo+hi)/2;
+  return probs.map(p=>Math.pow(p,1/k));
+}
+
+// Pinnacle de-vig: use Pinnacle's line, devigMul
+function devigPin(outcomes, bookmakers){
+  for(const sh of SHARP_BOOKS){
+    const bm = bookmakers.find(b=>b.key===sh);
+    if(!bm) continue;
+    const mkt = bm.markets?.find(m=>m.key===outcomes[0]._mktKey);
+    if(!mkt) continue;
+    const matched = outcomes.map(o=>{
+      const mo = mkt.outcomes.find(x=>x.name===o.name && (x.point===o.point||o.point==null));
+      return mo ? toImpl(mo.price) : null;
+    });
+    if(matched.every(x=>x!==null)){
+      return {probs: devigMul(matched), book: sh};
+    }
+  }
+  return null;
+}
+
+function vigPct(probs){ return ((probs.reduce((a,b)=>a+b,0)-1)*100).toFixed(2) }
+function kellyF(fp,dec,frac){ const b=dec-1,q=1-fp; return Math.max(0,(b*fp-q)/b*frac) }
+function evPct(fp,dec){ return (fp*(dec-1)-(1-fp))*100 }
+
+// ══ FETCH ════════════════════════════════════════════════════════════════════
+async function fetchMarket(sport, market, apiKey){
+  // Player props & team totals have different endpoint pattern
+  const isEvent = market==="player_props"||market==="team_totals";
+  if(isEvent){
+    // First get events
+    const evRes = await fetch(`https://api.the-odds-api.com/v4/sports/${sport}/events?`+
+      new URLSearchParams({apiKey}));
+    if(!evRes.ok) return [];
+    const events = await evRes.json();
+    const rows = [];
+    for(const ev of events.slice(0,5)){ // limit to 5 events to save requests
+      const url = `https://api.the-odds-api.com/v4/sports/${sport}/events/${ev.id}/odds?`+
+        new URLSearchParams({apiKey,regions:"us",markets:market,oddsFormat:"american",bookmakers:ALL_BOOKS.join(",")});
+      const r = await fetch(url);
+      if(!r.ok) continue;
+      updateReqs(r);
+      const d = await r.json();
+      if(d) rows.push(d);
+    }
+    return rows;
+  }
+  const url = `https://api.the-odds-api.com/v4/sports/${sport}/odds?`+
+    new URLSearchParams({apiKey,regions:"us",markets:market,oddsFormat:"american",bookmakers:ALL_BOOKS.join(",")});
+  const r = await fetch(url);
+  if(!r.ok){
+    let m=`HTTP ${r.status}`;
+    try{const j=await r.json();m=j.message||m}catch{}
+    throw new Error(m);
+  }
+  updateReqs(r);
+  return await r.json();
+}
+
+function updateReqs(r){
+  const rem=r.headers.get("x-requests-remaining");
+  if(rem){document.getElementById("req-cnt").textContent=rem;document.getElementById("req-disp").classList.remove("hidden")}
+}
+
+// ══ SCAN ════════════════════════════════════════════════════════════════════
+async function runScan(){
+  const apiKey   = document.getElementById("api-key").value.trim();
+  const minEv    = parseFloat(document.getElementById("min-ev").value)||0;
+  const bankroll = parseFloat(document.getElementById("bankroll").value)||1000;
+  clearErr();
+  if(!apiKey){setErr("Please enter your API key.");return}
+  if(!selectedSports.length){setErr("Select at least one sport.");return}
+  if(!selectedMarkets.length){setErr("Select at least one market.");return}
+
+  const btn=document.getElementById("run-btn");
+  btn.disabled=true; btn.textContent="Scanning…";
+  document.getElementById("loading").classList.remove("hidden");
+  ["ev","arb","screen","prob"].forEach(id=>{
+    const s=document.getElementById(id+"-start");if(s)s.classList.add("hidden");
+    const c=document.getElementById(id+"-content");if(c)c.classList.add("hidden");
+  });
+
+  rawProb=[]; rawEV=[]; rawArb=[]; rawScreen=[];
+
+  try{
+    for(const sport of selectedSports){
+      for(const mkt of selectedMarkets){
+        document.getElementById("load-txt").textContent=`Fetching ${sport} — ${MKT_LABELS[mkt]||mkt}…`;
+        let events;
+        try{ events = await fetchMarket(sport, mkt, apiKey); }
+        catch(e){ console.warn(e); continue; }
+        if(!Array.isArray(events)) events=[events];
+        processEvents(events, mkt, minEv, bankroll);
+      }
+    }
+    renderAll();
+  }catch(e){
+    setErr(e.message);
+    ["ev","arb","screen","prob"].forEach(id=>{const s=document.getElementById(id+"-start");if(s)s.classList.remove("hidden")});
+  }finally{
+    btn.disabled=false; btn.textContent="▶ Run Scan";
+    document.getElementById("loading").classList.add("hidden");
+  }
+}
+
+// ══ PROCESS ══════════════════════════════════════════════════════════════════
+function processEvents(events, mktKey, minEv, bankroll){
+  for(const event of events){
+    if(!event||!event.bookmakers) continue;
+    const game = `${event.away_team||""} @ ${event.home_team||event.home_team||""}`.trim();
+    const time = event.commence_time
+      ? new Date(event.commence_time).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})
+      : "—";
+
+    // Collect all markets from all bookmakers
+    const mktMap = {}; // mktKey+pointKey => [{book, outcome, price, point}]
+    for(const bm of event.bookmakers||[]){
+      for(const mkt of bm.markets||[]){
+        if(mkt.key!==mktKey) continue;
+        for(const o of mkt.outcomes||[]){
+          const pkey = (o.point!=null) ? `${o.name}|${o.point}` : o.name;
+          if(!mktMap[pkey]) mktMap[pkey]=[];
+          mktMap[pkey].push({book:bm.key,name:o.name,price:o.price,point:o.point,_mktKey:mktKey});
+        }
+      }
+    }
+
+    // Group by "sides" (pairs for h2h/spreads/totals)
+    // For multi-outcome markets we process all outcomes together
+    const sideMap = groupIntoSides(mktMap, mktKey);
+
+    for(const [sideKey, sides] of Object.entries(sideMap)){
+      const outcomes = sides; // array of {name, point, bookOdds:[{book,price}]}
+
+      // Build implied prob arrays using best odds across all books
+      const impliedArr = outcomes.map(o=>{
+        const best = o.bookOdds.reduce((a,b)=>b.price>a.price?b:a);
+        return {name:o.name,point:o.point,impl:toImpl(best.price),bestBook:best.book,bestPrice:best.price,bookOdds:o.bookOdds};
+      });
+      const implProbs = impliedArr.map(x=>x.impl);
+
+      // De-vig methods
+      const addFair  = devigAdd([...implProbs]);
+      const mulFair  = devigMul([...implProbs]);
+      const powFair  = devigPow([...implProbs]);
+      const pinRes   = devigPin(impliedArr.map((x,i)=>({...x,_mktKey:mktKey})), event.bookmakers||[]);
+      const pinFair  = pinRes ? pinRes.probs : null;
+      const pinBook  = pinRes ? pinRes.book : null;
+      const vigStr   = vigPct(implProbs);
+
+      // Store prob rows
+      impliedArr.forEach((o,i)=>{
+        rawProb.push({
+          game, time, mkt:MKT_LABELS[mktKey]||mktKey, name:o.name, point:o.point,
+          bestBook:o.bestBook, bestPrice:o.bestPrice, implProb:o.impl,
+          vig: parseFloat(vigStr),
+          pinProb: pinFair ? pinFair[i] : null, pinBook,
+          addProb: addFair[i], mulProb: mulFair[i], powProb: powFair[i],
+          bookOdds: o.bookOdds,
+        });
+      });
+
+      // +EV: for each book's odds on each outcome, compare to each fair prob method
+      for(const [oi, o] of impliedArr.entries()){
+        const fairByMethod = {
+          pin: pinFair ? pinFair[oi] : null,
+          add: addFair[oi],
+          mul: mulFair[oi],
+          pow: powFair[oi],
+        };
+        for(const bo of o.bookOdds){
+          if(SHARP_BOOKS.includes(bo.book)) continue;
+          const dec = toDec(bo.price);
+          const evsByMethod = {};
+          for(const [m, fp] of Object.entries(fairByMethod)){
+            if(fp==null) continue;
+            evsByMethod[m] = evPct(fp,dec);
+          }
+          // Store if any method shows +EV
+          const maxEV = Math.max(...Object.values(evsByMethod));
+          if(maxEV >= minEv){
+            const k = kellyF(fairByMethod.pow||fairByMethod.mul, dec, 0.5);
+            rawEV.push({
+              game, time, mkt:MKT_LABELS[mktKey]||mktKey,
+              name:o.name, point:o.point,
+              book:bo.book, odds:fmtAm(bo.price), rawOdds:bo.price,
+              fairByMethod,
+              evsByMethod,
+              kellyStake:(k*bankroll).toFixed(2),
+            });
+          }
+        }
+      }
+
+      // Arbitrage: check if best odds across books sum <1
+      const bestPerOutcome = impliedArr.map(o=>{
+        const best = o.bookOdds.reduce((a,b)=>b.price>a.price?b:a);
+        return {name:o.name,point:o.point,book:best.book,price:best.price,impl:toImpl(best.price)};
+      });
+      const implSum = bestPerOutcome.reduce((s,x)=>s+x.impl,0);
+      if(implSum<1){
+        const arbPct=(1-implSum)*100;
+        const legs = bestPerOutcome.map(x=>({...x,stake:((x.impl/implSum)*bankroll).toFixed(2)}));
+        rawArb.push({game,time,mkt:MKT_LABELS[mktKey]||mktKey,legs,arbPct,profit:(bankroll/implSum-bankroll).toFixed(2)});
+      }
+
+      // Screen
+      impliedArr.forEach(o=>{
+        rawScreen.push({game,time,mkt:MKT_LABELS[mktKey]||mktKey,name:o.name,point:o.point,
+          books:o.bookOdds.sort((a,b)=>b.price-a.price)});
+      });
+    }
+  }
+}
+
+function groupIntoSides(mktMap, mktKey){
+  // For binary markets (h2h,spreads,totals) group pairs together
+  // For props each outcome is its own "side"
+  const sides = {};
+  if(mktKey==="h2h"){
+    // All outcomes in same event form one group
+    const group = {};
+    for(const [pkey,bookOdds] of Object.entries(mktMap)){
+      const name = bookOdds[0].name;
+      if(!group[name]) group[name]={name,point:null,bookOdds:[]};
+      group[name].bookOdds.push(...bookOdds.map(b=>({book:b.book,price:b.price})));
+    }
+    // Deduplicate bookOdds
+    for(const g of Object.values(group)){
+      const seen={};
+      g.bookOdds=g.bookOdds.filter(x=>{if(seen[x.book]) return false;seen[x.book]=true;return true});
+    }
+    sides["h2h"]=Object.values(group);
+  } else if(mktKey==="spreads"||mktKey==="totals"){
+    // Group by point value pairs
+    const byPoint={};
+    for(const [pkey,bookOdds] of Object.entries(mktMap)){
+      const pt = bookOdds[0].point;
+      const name = bookOdds[0].name;
+      // For spreads/totals, pair Over/Under or home/away at same point
+      const abspt = pt!=null ? Math.abs(pt) : "null";
+      if(!byPoint[abspt]) byPoint[abspt]={};
+      if(!byPoint[abspt][name]) byPoint[abspt][name]={name,point:pt,bookOdds:[]};
+      byPoint[abspt][name].bookOdds.push(...bookOdds.map(b=>({book:b.book,price:b.price})));
+    }
+    for(const [pt,outcomes] of Object.entries(byPoint)){
+      for(const g of Object.values(outcomes)){
+        const seen={};
+        g.bookOdds=g.bookOdds.filter(x=>{if(seen[x.book]) return false;seen[x.book]=true;return true});
+      }
+      sides[pt]=Object.values(outcomes);
+    }
+  } else {
+    // Props: each outcome is independent (player over/under their own market)
+    const byMkt={};
+    for(const [pkey,bookOdds] of Object.entries(mktMap)){
+      const desc = bookOdds[0].description||bookOdds[0].name;
+      const name = bookOdds[0].name;
+      const pt   = bookOdds[0].point;
+      const grpKey = `${desc}|${pt}`;
+      if(!byMkt[grpKey]) byMkt[grpKey]={};
+      if(!byMkt[grpKey][name]) byMkt[grpKey][name]={name,point:pt,bookOdds:[]};
+      byMkt[grpKey][name].bookOdds.push(...bookOdds.map(b=>({book:b.book,price:b.price})));
+    }
+    for(const [grpKey,outcomes] of Object.entries(byMkt)){
+      for(const g of Object.values(outcomes)){
+        const seen={};
+        g.bookOdds=g.bookOdds.filter(x=>{if(seen[x.book]) return false;seen[x.book]=true;return true});
+      }
+      sides[grpKey]=Object.values(outcomes);
+    }
+  }
+  return sides;
+}
+
+// ══ RENDER ALL ═══════════════════════════════════════════════════════════════
+function renderAll(){ renderProb(); renderEV(); renderArb(); renderScreen(); }
+
+// ── PROB ──
+let probFiltered = [];
+function renderProb(){
+  probFiltered = [...rawProb];
+  const q = document.getElementById("prob-filter").value.toLowerCase();
+  if(q) probFiltered=probFiltered.filter(r=>
+    (r.game+r.name+r.mkt).toLowerCase().includes(q));
+  const sort = document.getElementById("prob-sort").value;
+  if(sort==="mkt") probFiltered.sort((a,b)=>a.mkt.localeCompare(b.mkt)||a.game.localeCompare(b.game));
+  else if(sort==="vigor") probFiltered.sort((a,b)=>b.vig-a.vig);
+  else probFiltered.sort((a,b)=>a.game.localeCompare(b.game));
+
+  document.getElementById("prob-badge").textContent=`${probFiltered.length} outcomes`;
+  document.getElementById("prob-content").classList.remove("hidden");
+  const tbody=document.getElementById("prob-tbody"); tbody.innerHTML="";
+  if(!probFiltered.length){tbody.innerHTML=`<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted2)">No data. Run a scan.</td></tr>`;return}
+  probFiltered.forEach(r=>{
+    const tr=document.createElement("tr");
+    const pinCell = r.pinProb!=null
+      ? `<span class="pm pm-pin">${(r.pinProb*100).toFixed(2)}%</span><div class="pm-label">${SHORT[r.pinBook]||r.pinBook}</div>`
+      : `<span style="color:var(--muted)">—</span>`;
+    tr.innerHTML=`
+      <td><div class="game">${r.game}</div><span class="mkt-tag">${r.mkt}</span></td>
+      <td class="dt">${r.time}</td>
+      <td><span class="outcome-name">${r.name}</span>${r.point!=null?`<span class="point"> (${r.point>0?"+":""}${r.point})</span>`:""}</td>
+      <td><span class="book-tag">${SHORT[r.bestBook]||r.bestBook}</span></td>
+      <td class="odds-val">${fmtAm(r.bestPrice)}</td>
+      <td>${(r.implProb*100).toFixed(2)}%</td>
+      <td style="color:${r.vig>5?"var(--red)":r.vig>3?"var(--amber)":"var(--muted2)"}">${r.vig}%</td>
+      <td>${pinCell}</td>
+      <td><span class="pm pm-add">${(r.addProb*100).toFixed(2)}%</span></td>
+      <td><span class="pm pm-mul">${(r.mulProb*100).toFixed(2)}%</span></td>
+      <td><span class="pm pm-pow">${(r.powProb*100).toFixed(2)}%</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function filterProb(){ renderProb() }
+function setSortProb(f){ document.getElementById("prob-sort").value=f; renderProb() }
+
+// ── EV ──
+let evFiltered = [];
+function renderEV(){
+  const method = document.getElementById("ev-method").value;
+  const q = document.getElementById("ev-filter").value.toLowerCase();
+  evFiltered = rawEV.filter(r=>r.evsByMethod[method]!=null && r.evsByMethod[method]>=parseFloat(document.getElementById("min-ev").value||0));
+  if(q) evFiltered=evFiltered.filter(r=>(r.game+r.name+r.book+r.mkt).toLowerCase().includes(q));
+  evFiltered.sort((a,b)=>(b.evsByMethod[method]||0)-(a.evsByMethod[method]||0));
+  document.getElementById("ev-badge").textContent=`${evFiltered.length} found`;
+  document.getElementById("ev-content").classList.remove("hidden");
+  const tbody=document.getElementById("ev-tbody");tbody.innerHTML="";
+  if(!evFiltered.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted2)">No +EV bets found. Try lowering Min EV% or scanning more markets.</td></tr>`;return}
+  evFiltered.forEach(r=>{
+    const ev=r.evsByMethod[method];
+    const fp=r.fairByMethod[method];
+    const cls=ev>=5?"ev-hot":ev>=2?"ev-good":"ev-low";
+    const tr=document.createElement("tr");
+    tr.className="clickrow"; tr.title="Click to send to Bet Tracker";
+    tr.onclick=()=>prefillTracker(r,method);
+    tr.innerHTML=`
+      <td><div class="game">${r.game}</div><span class="mkt-tag">${r.mkt}</span></td>
+      <td class="dt">${r.time}</td>
+      <td>${r.name}${r.point!=null?` (${r.point>0?"+":""}${r.point})`:""}</td>
+      <td><span class="book-tag">${SHORT[r.book]||r.book}</span></td>
+      <td class="odds-val">${r.odds}</td>
+      <td>${fp!=null?(fp*100).toFixed(2)+"%":"—"}</td>
+      <td><span class="${cls}">+${ev.toFixed(2)}%</span></td>
+      <td class="odds-val">$${r.kellyStake}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function filterEV(){ renderEV() }
+
+// ── ARB ──
+function renderArb(){
+  const sorted=[...rawArb].sort((a,b)=>b.arbPct-a.arbPct);
+  document.getElementById("arb-badge").textContent=`${sorted.length} found`;
+  document.getElementById("arb-content").classList.remove("hidden");
+  const tbody=document.getElementById("arb-tbody");tbody.innerHTML="";
+  if(!sorted.length){tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted2)">No arbitrage opportunities found. Markets are fairly priced.</td></tr>`;return}
+  sorted.forEach(r=>{
+    const tr=document.createElement("tr");
+    const legCells=r.legs.map(l=>`<td>
+      <b>${l.name}${l.point!=null?` (${l.point>0?"+":""}${l.point})`:""}</b><br/>
+      <span style="color:var(--purple)">${SHORT[l.book]||l.book}</span>
+      <span class="odds-val"> ${fmtAm(l.price)}</span><br/>
+      <small style="color:var(--muted2)">Stake: $${l.stake}</small>
+    </td>`).join("");
+    tr.innerHTML=`<td class="game">${r.game}</td><td><span class="mkt-tag" style="font-size:10px">${r.mkt}</span></td><td class="dt">${r.time}</td>${legCells}
+      <td><span class="arb-pill">+${r.arbPct.toFixed(3)}%</span></td>
+      <td class="pp">+$${r.profit}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── SCREEN ──
+let screenFiltered=[];
+function renderScreen(){
+  const q=document.getElementById("screen-filter").value.toLowerCase();
+  screenFiltered=[...rawScreen];
+  if(q) screenFiltered=screenFiltered.filter(r=>(r.game+r.name+r.mkt).toLowerCase().includes(q));
+  document.getElementById("screen-badge").textContent=`${screenFiltered.length} lines`;
+  document.getElementById("screen-content").classList.remove("hidden");
+  const tbody=document.getElementById("screen-tbody");tbody.innerHTML="";
+  screenFiltered.forEach(r=>{
+    const bksHtml=r.books.slice(0,9).map((b,j)=>`
+      <div class="bk ${j===0?"best":""}">
+        <span class="bn">${SHORT[b.book]||b.book}</span>
+        <span class="bp">${fmtAm(b.price)}</span>
+      </div>`).join("");
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="game">${r.game}</td><td><span class="mkt-tag">${r.mkt}</span></td>
+      <td>${r.name}${r.point!=null?` <span style="color:var(--muted2)">(${r.point>0?"+":""}${r.point})</span>`:""}</td>
+      <td><div class="bks">${bksHtml}</div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function filterScreen(){ renderScreen() }
+
+// ══ KELLY ════════════════════════════════════════════════════════════════════
+function calcKelly(){
+  const odds=parseFloat(document.getElementById("k-odds").value);
+  const prob=parseFloat(document.getElementById("k-prob").value)/100;
+  const bank=parseFloat(document.getElementById("k-bank").value);
+  const frac=parseFloat(document.getElementById("k-frac").value);
+  const sv=document.getElementById("kr-stake"), ss=document.getElementById("kr-sub");
+  if(isNaN(odds)||isNaN(prob)||isNaN(bank)||prob<=0||prob>=1){sv.textContent="—";ss.textContent="Enter values above";return}
+  const dec=toDec(odds),k=kellyF(prob,dec,frac),stake=k*bank,ev=evPct(prob,dec);
+  sv.textContent=`$${stake.toFixed(2)}`;
+  sv.style.color=stake>0?"var(--green)":"var(--red)";
+  ss.textContent=`${(k*100).toFixed(2)}% of bankroll · EV: ${ev>=0?"+":""}${ev.toFixed(2)}%`;
+}
+function sendKellyToTracker(){
+  const odds=document.getElementById("k-odds").value;
+  const bank=parseFloat(document.getElementById("k-bank").value);
+  const prob=parseFloat(document.getElementById("k-prob").value)/100;
+  const frac=parseFloat(document.getElementById("k-frac").value);
+  const method=document.getElementById("k-method").value;
+  if(!odds||!bank||!prob) return;
+  const dec=toDec(parseFloat(odds));
+  document.getElementById("t-odds").value=odds;
+  document.getElementById("t-stake").value=(kellyF(prob,dec,frac)*bank).toFixed(2);
+  document.getElementById("t-ev").value=evPct(prob,dec).toFixed(2);
+  document.getElementById("t-method").value=method;
+  showPanel("tracker");
+}
+
+// ══ TRACKER ══════════════════════════════════════════════════════════════════
+function prefillTracker(r, method){
+  const fp=r.fairByMethod[method];
+  document.getElementById("t-game").value=`${r.name}${r.point!=null?` (${r.point>0?"+":""}${r.point})`:""} — ${r.game}`;
+  document.getElementById("t-book").value=SHORT[r.book]||r.book;
+  document.getElementById("t-mkt").value=r.mkt;
+  document.getElementById("t-odds").value=r.rawOdds;
+  document.getElementById("t-stake").value=r.kellyStake;
+  document.getElementById("t-ev").value=(r.evsByMethod[method]||0).toFixed(2);
+  document.getElementById("t-method").value=["pin","add","mul","pow"][["pin","add","mul","pow"].indexOf(method)]||method;
+  showPanel("tracker");
+}
+function addBet(){
+  const game=document.getElementById("t-game").value.trim();
+  const book=document.getElementById("t-book").value.trim();
+  const mkt=document.getElementById("t-mkt").value.trim();
+  const odds=parseFloat(document.getElementById("t-odds").value);
+  const stake=parseFloat(document.getElementById("t-stake").value);
+  const ev=parseFloat(document.getElementById("t-ev").value);
+  const method=document.getElementById("t-method").value.trim();
+  if(!game||isNaN(odds)||isNaN(stake)){alert("Fill in Bet, Odds, and Stake.");return}
+  bets.unshift({id:Date.now(),date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}),game,book,mkt,odds,stake,ev:isNaN(ev)?null:ev,method,outcome:null});
+  saveBets(); renderTracker();
+  ["t-game","t-book","t-mkt","t-odds","t-stake","t-ev","t-method"].forEach(id=>document.getElementById(id).value="");
+}
+function setOutcome(id,o){const b=bets.find(x=>x.id===id);if(!b) return;b.outcome=b.outcome===o?null:o;saveBets();renderTracker()}
+function deleteBet(id){bets=bets.filter(x=>x.id!==id);saveBets();renderTracker()}
+function saveBets(){localStorage.setItem("es2_bets",JSON.stringify(bets))}
+function calcPnL(bet){
+  if(bet.outcome==="won") return((toDec(bet.odds)-1)*bet.stake).toFixed(2);
+  if(bet.outcome==="lost") return(-bet.stake).toFixed(2);
+  if(bet.outcome==="push") return"0.00";
+  return null;
+}
+function renderTracker(){
+  const settled=bets.filter(b=>b.outcome);
+  const wins=settled.filter(b=>b.outcome==="won").length;
+  const losses=settled.filter(b=>b.outcome==="lost").length;
+  const totalPnL=settled.reduce((s,b)=>s+parseFloat(calcPnL(b)||0),0);
+  const totalStaked=bets.reduce((s,b)=>s+b.stake,0);
+  const roi=totalStaked>0?(totalPnL/totalStaked*100):0;
+  document.getElementById("tracker-stats").innerHTML=`
+    <div class="sc"><div class="sc-l">Total Bets</div><div class="sc-v">${bets.length}</div></div>
+    <div class="sc"><div class="sc-l">Record</div><div class="sc-v">${wins}–${losses}</div></div>
+    <div class="sc"><div class="sc-l">Total P&L</div><div class="sc-v ${totalPnL>=0?"g":"r"}">${totalPnL>=0?"+":""}$${Math.abs(totalPnL).toFixed(2)}</div></div>
+    <div class="sc"><div class="sc-l">ROI</div><div class="sc-v ${roi>=0?"g":"r"}">${roi>=0?"+":""}${roi.toFixed(1)}%</div></div>
+    <div class="sc"><div class="sc-l">Total Staked</div><div class="sc-v a">$${totalStaked.toFixed(2)}</div></div>`;
+  document.getElementById("tracker-badge").textContent=`${bets.length} bets`;
+  const tbody=document.getElementById("tracker-tbody"); tbody.innerHTML="";
+  if(!bets.length){
+    document.getElementById("tracker-empty").classList.remove("hidden");
+    document.getElementById("tracker-tbl").classList.add("hidden"); return;
+  }
+  document.getElementById("tracker-empty").classList.add("hidden");
+  document.getElementById("tracker-tbl").classList.remove("hidden");
+  bets.forEach(bet=>{
+    const pnl=calcPnL(bet);
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="dt">${bet.date}</td><td class="game">${bet.game}</td><td>${bet.book||"—"}</td>
+      <td><span class="mkt-tag" style="font-size:10px;color:var(--muted2)">${bet.mkt||"—"}</span></td>
+      <td class="odds-val">${fmtAm(bet.odds)}</td><td>$${bet.stake.toFixed(2)}</td>
+      <td>${bet.ev!=null?`<span class="${bet.ev>=2?"ev-good":"ev-low"}">+${bet.ev.toFixed(1)}%</span>`:"—"}</td>
+      <td style="color:var(--muted2);font-size:10px">${bet.method||"—"}</td>
+      <td><div style="display:flex;gap:3px">
+        <button class="ob ${bet.outcome==="won"?"won":""}" onclick="setOutcome(${bet.id},'won')">W</button>
+        <button class="ob ${bet.outcome==="lost"?"lost":""}" onclick="setOutcome(${bet.id},'lost')">L</button>
+        <button class="ob ${bet.outcome==="push"?"push":""}" onclick="setOutcome(${bet.id},'push')">P</button>
+      </div></td>
+      <td class="${pnl!==null?(parseFloat(pnl)>=0?"pp":"pn"):""}">
+        ${pnl!==null?(parseFloat(pnl)>=0?"+":"")+`$${Math.abs(parseFloat(pnl)).toFixed(2)}`:"Pending"}
+      </td>
+      <td><button class="del" onclick="deleteBet(${bet.id})">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ══ CSV EXPORT ════════════════════════════════════════════════════════════════
+function exportCSV(type){
+  let rows=[], headers=[], filename="";
+  if(type==="prob"){
+    headers=["Game","Market","Time","Outcome","Point","Ref Book","Best Odds","Implied Prob %","Vig %","Pinnacle Fair %","Additive Fair %","Multiplicative Fair %","Power Fair %"];
+    rows=rawProb.map(r=>[r.game,r.mkt,r.time,r.name,r.point??"",(SHORT[r.bestBook]||r.bestBook),fmtAm(r.bestPrice),(r.implProb*100).toFixed(3),r.vig,(r.pinProb!=null?(r.pinProb*100).toFixed(3):""),(r.addProb*100).toFixed(3),(r.mulProb*100).toFixed(3),(r.powProb*100).toFixed(3)]);
+    filename="edgescout_probabilities.csv";
+  } else if(type==="ev"){
+    const method=document.getElementById("ev-method").value;
+    headers=["Game","Market","Time","Outcome","Point","Book","Odds","Fair Prob %","EV %","Kelly Stake $"];
+    rows=evFiltered.map(r=>[r.game,r.mkt,r.time,r.name,r.point??"",(SHORT[r.book]||r.book),r.odds,(r.fairByMethod[method]!=null?(r.fairByMethod[method]*100).toFixed(3):""),(r.evsByMethod[method]||0).toFixed(3),r.kellyStake]);
+    filename="edgescout_ev_bets.csv";
+  } else if(type==="arb"){
+    headers=["Game","Market","Time","Leg 1 Outcome","Leg 1 Book","Leg 1 Odds","Leg 1 Stake","Leg 2 Outcome","Leg 2 Book","Leg 2 Odds","Leg 2 Stake","Arb %","Profit $"];
+    rows=rawArb.map(r=>{const l=r.legs;return[r.game,r.mkt,r.time,l[0]?.name||"",SHORT[l[0]?.book]||l[0]?.book||"",l[0]?fmtAm(l[0].price):"",l[0]?.stake||"",l[1]?.name||"",SHORT[l[1]?.book]||l[1]?.book||"",l[1]?fmtAm(l[1].price):"",l[1]?.stake||"",r.arbPct.toFixed(3),r.profit]});
+    filename="edgescout_arbitrage.csv";
+  } else if(type==="tracker"){
+    headers=["Date","Bet","Book","Market","Odds","Stake $","EV %","Method","Outcome","P&L $"];
+    rows=bets.map(b=>{const pnl=calcPnL(b);return[b.date,b.game,b.book||"",b.mkt||"",fmtAm(b.odds),b.stake.toFixed(2),b.ev!=null?b.ev.toFixed(2):"",b.method||"",b.outcome||"Pending",pnl!=null?pnl:""]});
+    filename="edgescout_bets.csv";
+  }
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
+  a.download=filename; a.click();
+}
+
+// ══ NAV ══════════════════════════════════════════════════════════════════════
+function showPanel(id){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
+  document.querySelectorAll(".ntab").forEach(t=>t.classList.remove("on"));
+  document.getElementById("panel-"+id).classList.add("on");
+  const idx={prob:0,ev:1,arb:2,screen:3,kelly:4,tracker:5}[id];
+  document.querySelectorAll(".ntab")[idx].classList.add("on");
+  if(id==="tracker") renderTracker();
+}
+function setErr(m){const e=document.getElementById("err-box");e.textContent="⚠ "+m;e.classList.remove("hidden")}
+function clearErr(){document.getElementById("err-box").classList.add("hidden")}
+
+renderTracker();
+</script>
+</body>
+</html>
