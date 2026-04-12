@@ -22,3 +22,5 @@ Features
 ⬇ CSV Export — export probabilities, EV bets, arbitrage, and bet history for external analysis
 
 Powered by The Odds API. Bring your own API key — free tier available at the-odds-api.com.
+
+Listed at https://rtssports.github.io/edgescout
