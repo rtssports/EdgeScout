@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EdgeScout Pro v2</title>
+<title>EdgeScout Pro</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -181,6 +181,63 @@ td{padding:9px 11px;vertical-align:middle}
 .bk .bp{font-size:11px;font-weight:600;color:var(--txt)}
 .bk.best .bp{color:var(--green)}
 @media(max-width:720px){.kelly-grid{grid-template-columns:1fr}}
+
+/* EV FILTER BAR */
+.ev-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;padding:10px 14px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:6px;margin-bottom:14px}
+.ev-filters .f{gap:4px}
+.ev-filters label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.ev-filters input,.ev-filters select{font-size:11px;padding:5px 9px}
+.filter-reset{padding:5px 12px;background:transparent;border:1px solid var(--bd);border-radius:4px;
+  color:var(--muted2);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;
+  transition:all .12s;align-self:flex-end}
+.filter-reset:hover{border-color:var(--red);color:var(--red)}
+.dp-count{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:10px;
+  font-size:10px;font-weight:600}
+.dp-high{background:rgba(0,229,160,.12);color:var(--green)}
+.dp-med{background:rgba(255,201,77,.1);color:var(--amber)}
+.dp-low{background:rgba(255,77,109,.1);color:var(--red)}
+
+/* FAIR VALUE PANEL */
+.fv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.fv-card{background:var(--s1);border:1px solid var(--bd);border-radius:7px;padding:18px}
+.fv-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px}
+.fv-card .fv-sub{font-size:10px;color:var(--muted2);margin-bottom:14px;line-height:1.6}
+.fv-fields{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.fv-fields input,.fv-fields select{width:100%}
+.fv-result{padding:14px;background:var(--bg);border:1px solid var(--bd);border-radius:5px}
+.fv-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  border-bottom:1px solid rgba(28,37,53,.6)}
+.fv-row:last-child{border-bottom:none}
+.fv-label{font-size:10px;color:var(--muted2)}
+.fv-val{font-size:11px;font-weight:600}
+.fv-compare{margin-top:14px}
+.fv-compare-title{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.book-compare-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(28,37,53,.5)}
+.book-compare-row:last-child{border-bottom:none}
+.bcr-book{font-size:10px;width:50px;color:var(--muted2);flex-shrink:0}
+.bcr-odds{font-size:11px;font-weight:600;color:var(--amber);width:48px;flex-shrink:0}
+.bcr-bar-wrap{flex:1;background:var(--s2);border-radius:2px;height:6px;position:relative}
+.bcr-bar{height:6px;border-radius:2px;transition:width .3s}
+.bcr-bar.pos{background:var(--green)}
+.bcr-bar.neg{background:var(--red)}
+.bcr-bar.neutral{background:var(--muted)}
+.bcr-ev{font-size:10px;font-weight:600;width:55px;text-align:right;flex-shrink:0}
+.bcr-ev.pos{color:var(--green)}
+.bcr-ev.neg{color:var(--red)}
+.bcr-ev.neutral{color:var(--muted2)}
+.fv-calc-btn{width:100%;padding:8px;background:var(--green);color:#000;border:none;border-radius:4px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;margin-top:12px;transition:all .12s}
+.fv-calc-btn:hover{background:#00ffb3}
+.consensus-section{background:var(--s1);border:1px solid var(--bd);border-radius:7px;padding:18px;margin-bottom:20px}
+.consensus-section h3{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px}
+.consensus-section .fv-sub{font-size:10px;color:var(--muted2);margin-bottom:14px}
+.method-compare-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.mc-card{background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:12px;text-align:center}
+.mc-card .mc-method{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.mc-card .mc-prob{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
+.mc-card .mc-odds{font-size:10px;color:var(--muted2);margin-top:2px}
+@media(max-width:720px){.kelly-grid{grid-template-columns:1fr}.fv-grid{grid-template-columns:1fr}.method-compare-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -194,6 +251,7 @@ td{padding:9px 11px;vertical-align:middle}
     <button class="ntab" onclick="showPanel('ev')">📈 +EV Finder</button>
     <button class="ntab" onclick="showPanel('arb')">⚡ Arbitrage</button>
     <button class="ntab" onclick="showPanel('screen')">📊 Odds Screen</button>
+    <button class="ntab" onclick="showPanel('fv')">🎯 Fair Value</button>
     <button class="ntab" onclick="showPanel('kelly')">⚗️ Kelly Calc</button>
     <button class="ntab" onclick="showPanel('tracker')">📋 Bet Tracker</button>
   </div>
@@ -277,24 +335,52 @@ td{padding:9px 11px;vertical-align:middle}
 
 <!-- +EV -->
 <div class="panel" id="panel-ev">
-  <div class="empty" id="ev-start"><div class="ico">📈</div><p>Run a scan to find positive expected value bets<br/>across all selected markets and books.</p></div>
-  <div class="hidden" id="ev-content">
-    <div class="prob-toolbar">
-      <input class="filter-input" type="text" id="ev-filter" placeholder="Filter results…" oninput="filterEV()"/>
-      <select id="ev-method" onchange="renderEV()" style="width:200px">
+  <!-- Filters always visible -->
+  <div class="ev-filters">
+    <div class="f"><label class="lbl">Search</label><input type="text" id="ev-filter" placeholder="Game, outcome, book…" oninput="filterEV()" style="width:170px"/></div>
+    <div class="f"><label class="lbl">Method</label>
+      <select id="ev-method" onchange="filterEV()" style="width:160px">
         <option value="pin">Pinnacle reference</option>
         <option value="add">Additive de-vig</option>
         <option value="mul">Multiplicative de-vig</option>
         <option value="pow" selected>Power method</option>
       </select>
-      <button class="export-btn" onclick="exportCSV('ev')">⬇ Export CSV</button>
     </div>
+    <div class="f"><label class="lbl">Min Odds</label><input type="number" id="ev-min-odds" placeholder="-300" style="width:76px" oninput="filterEV()"/></div>
+    <div class="f"><label class="lbl">Max Odds</label><input type="number" id="ev-max-odds" placeholder="+500" style="width:76px" oninput="filterEV()"/></div>
+    <div class="f"><label class="lbl">Min EV %</label><input type="number" id="ev-min-ev-filter" placeholder="1.0" step="0.5" style="width:72px" oninput="filterEV()"/></div>
+    <div class="f"><label class="lbl">Max EV %</label><input type="number" id="ev-max-ev-filter" placeholder="—" step="0.5" style="width:72px" oninput="filterEV()"/></div>
+    <div class="f"><label class="lbl">Min Data Points</label>
+      <select id="ev-min-dp" onchange="filterEV()" style="width:115px">
+        <option value="0">Any</option>
+        <option value="3">3+ books</option>
+        <option value="5">5+ books</option>
+        <option value="7">7+ books</option>
+        <option value="9">9+ books</option>
+      </select>
+    </div>
+    <div class="f"><label class="lbl">Market</label>
+      <select id="ev-mkt-filter" onchange="filterEV()" style="width:115px">
+        <option value="">All markets</option>
+        <option value="Moneyline">Moneyline</option>
+        <option value="Spread">Spread</option>
+        <option value="Total">Total</option>
+        <option value="Player Prop">Player Prop</option>
+        <option value="Team Total">Team Total</option>
+      </select>
+    </div>
+    <button class="filter-reset" onclick="resetEVFilters()">↺ Reset</button>
+    <button class="export-btn" onclick="exportCSV('ev')" style="margin-left:0">⬇ CSV</button>
+  </div>
+  <!-- Results (shown after scan) -->
+  <div class="empty" id="ev-start"><div class="ico">📈</div><p>Run a scan to find positive expected value bets<br/>across all selected markets and books.</p></div>
+  <div class="hidden" id="ev-content">
     <div class="sh"><div class="st">Positive EV Bets</div><span class="badge" id="ev-badge">0 found</span></div>
-    <p class="note">EV calculated using selected probability method. <b>Click any row</b> to send to Bet Tracker. Kelly stake = Half Kelly.</p>
+    <p class="note">EV calculated using selected method. <b>Click any row</b> to send to Bet Tracker or Fair Value tab. Data Points = number of books pricing this line (more = higher confidence).</p>
     <div class="tbl-wrap">
       <table><thead><tr>
         <th>Game / Market</th><th>Time</th><th>Outcome</th><th>Book</th>
-        <th>Odds</th><th>Fair Prob</th><th>EV %</th><th>Kelly Stake</th>
+        <th>Odds</th><th>Fair Prob</th><th>EV %</th><th>Data Points</th><th>Kelly Stake</th>
       </tr></thead><tbody id="ev-tbody"></tbody></table>
     </div>
   </div>
@@ -331,6 +417,91 @@ td{padding:9px 11px;vertical-align:middle}
       <table><thead><tr>
         <th>Game</th><th>Market</th><th>Outcome</th><th>Odds by Book</th>
       </tr></thead><tbody id="screen-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+
+<!-- FAIR VALUE -->
+<div class="panel" id="panel-fv">
+  <div class="fv-grid">
+    <div class="fv-card">
+      <h3>🎯 Fair Value Calculator</h3>
+      <div class="fv-sub">Enter any odds or pick from scan results to calculate the true fair value and compare it against every book in the market.</div>
+      <div class="fv-fields">
+        <div class="f"><label class="lbl">Outcome / Bet Description</label><input type="text" id="fv-name" placeholder="e.g. Lakers ML" style="width:100%"/></div>
+        <div class="f"><label class="lbl">Reference Odds (American)</label><input type="number" id="fv-ref-odds" placeholder="-148" oninput="calcFV()"/></div>
+        <div class="f"><label class="lbl">Reference Book</label>
+          <select id="fv-ref-book" onchange="calcFV()">
+            <option value="pinnacle">Pinnacle (Sharp)</option>
+            <option value="circa">Circa (Sharp)</option>
+            <option value="bookmaker">Bookmaker (Sharp)</option>
+            <option value="draftkings">DraftKings</option>
+            <option value="fanduel">FanDuel</option>
+            <option value="betmgm">BetMGM</option>
+            <option value="caesars">Caesars</option>
+            <option value="custom">Custom / Manual</option>
+          </select>
+        </div>
+        <div class="f"><label class="lbl">Opposing Side Odds (for de-vig)</label><input type="number" id="fv-opp-odds" placeholder="+130" oninput="calcFV()"/></div>
+        <div class="f"><label class="lbl">De-vig Method</label>
+          <select id="fv-method" onchange="calcFV()">
+            <option value="mul">Multiplicative (standard)</option>
+            <option value="add">Additive</option>
+            <option value="pow" selected>Power (recommended)</option>
+          </select>
+        </div>
+      </div>
+      <button class="fv-calc-btn" onclick="calcFV()">Calculate Fair Value</button>
+      <div class="fv-result" id="fv-result" style="margin-top:14px;display:none">
+        <div class="fv-row"><span class="fv-label">Implied Probability</span><span class="fv-val" id="fv-impl">—</span></div>
+        <div class="fv-row"><span class="fv-label">Vig on this side</span><span class="fv-val" id="fv-vig">—</span></div>
+        <div class="fv-row"><span class="fv-label">Fair Probability (Power)</span><span class="fv-val pm-pow" id="fv-fair-pow">—</span></div>
+        <div class="fv-row"><span class="fv-label">Fair Probability (Mult.)</span><span class="fv-val pm-mul" id="fv-fair-mul">—</span></div>
+        <div class="fv-row"><span class="fv-label">Fair Probability (Add.)</span><span class="fv-val pm-add" id="fv-fair-add">—</span></div>
+        <div class="fv-row"><span class="fv-label">Fair Odds (Power)</span><span class="fv-val" id="fv-fair-odds">—</span></div>
+        <div class="fv-row"><span class="fv-label">No-vig line</span><span class="fv-val" id="fv-novig">—</span></div>
+      </div>
+    </div>
+
+    <div class="fv-card">
+      <h3>📐 Method Comparison</h3>
+      <div class="fv-sub">Side-by-side true probability from all 4 methods for the entered line.</div>
+      <div class="method-compare-grid" id="fv-method-grid">
+        <div class="mc-card"><div class="mc-method" style="color:var(--green)">Pinnacle</div><div class="mc-prob" style="color:var(--muted2)">—</div><div class="mc-odds" >Enter odds</div></div>
+        <div class="mc-card"><div class="mc-method" style="color:var(--purple)">Power</div><div class="mc-prob" style="color:var(--muted2)">—</div><div class="mc-odds">Enter odds</div></div>
+        <div class="mc-card"><div class="mc-method" style="color:var(--cyan)">Mult.</div><div class="mc-prob" style="color:var(--muted2)">—</div><div class="mc-odds">Enter odds</div></div>
+        <div class="mc-card"><div class="mc-method" style="color:var(--blue)">Add.</div><div class="mc-prob" style="color:var(--muted2)">—</div><div class="mc-odds">Enter odds</div></div>
+      </div>
+      <div class="fv-compare" id="fv-book-compare" style="display:none">
+        <div class="fv-compare-title">Market Comparison — EV vs Fair Value</div>
+        <div id="fv-book-rows"></div>
+      </div>
+      <div style="text-align:center;padding:20px;color:var(--muted2);font-size:11px" id="fv-compare-empty">
+        Enter reference odds above to compare against all books.<br/>
+        Or click any row in the +EV Finder or Prob Engine to auto-fill.
+      </div>
+    </div>
+  </div>
+
+  <!-- Consensus Section -->
+  <div class="consensus-section">
+    <h3>🏦 Live Market Consensus</h3>
+    <div class="fv-sub">After running a scan, select any outcome from your results to see every book's price vs the fair value, all in one view.</div>
+    <div class="prob-toolbar" style="margin-bottom:14px">
+      <input type="text" id="fv-search" placeholder="Search outcomes from last scan…" oninput="filterFVConsensus()" style="width:260px"/>
+      <select id="fv-consensus-select" onchange="loadConsensus()" style="width:320px">
+        <option value="">— Select outcome from last scan —</option>
+      </select>
+    </div>
+    <div class="empty" id="fv-consensus-empty"><div class="ico">🏦</div><p>Run a scan first, then select an outcome above<br/>to see full market consensus vs fair value.</p></div>
+    <div class="hidden" id="fv-consensus-content">
+      <div class="stats-row" id="fv-consensus-stats"></div>
+      <div class="tbl-wrap">
+        <table><thead><tr>
+          <th>Book</th><th>Odds</th><th>Implied Prob</th><th>vs Fair (Power)</th><th>EV %</th><th>Edge</th>
+        </tr></thead><tbody id="fv-consensus-tbody"></tbody></table>
+      </div>
     </div>
   </div>
 </div>
@@ -678,6 +849,8 @@ function processEvents(events, mktKey, minEv, bankroll){
               fairByMethod,
               evsByMethod,
               kellyStake:(k*bankroll).toFixed(2),
+              dataPoints: o.bookOdds.length,
+              allBookOdds: o.bookOdds,
             });
           }
         }
@@ -808,23 +981,60 @@ function setSortProb(f){ document.getElementById("prob-sort").value=f; renderPro
 
 // ── EV ──
 let evFiltered = [];
+function filterEV(){ renderEV() }
+function resetEVFilters(){
+  document.getElementById("ev-filter").value="";
+  document.getElementById("ev-min-odds").value="";
+  document.getElementById("ev-max-odds").value="";
+  document.getElementById("ev-min-ev-filter").value="";
+  document.getElementById("ev-max-ev-filter").value="";
+  document.getElementById("ev-min-dp").value="0";
+  document.getElementById("ev-mkt-filter").value="";
+  renderEV();
+}
 function renderEV(){
   const method = document.getElementById("ev-method").value;
   const q = document.getElementById("ev-filter").value.toLowerCase();
-  evFiltered = rawEV.filter(r=>r.evsByMethod[method]!=null && r.evsByMethod[method]>=parseFloat(document.getElementById("min-ev").value||0));
-  if(q) evFiltered=evFiltered.filter(r=>(r.game+r.name+r.book+r.mkt).toLowerCase().includes(q));
+  const minOddsRaw = document.getElementById("ev-min-odds").value;
+  const maxOddsRaw = document.getElementById("ev-max-odds").value;
+  const minEvF = parseFloat(document.getElementById("ev-min-ev-filter").value)||parseFloat(document.getElementById("min-ev").value)||0;
+  const maxEvF = parseFloat(document.getElementById("ev-max-ev-filter").value)||Infinity;
+  const minDp  = parseInt(document.getElementById("ev-min-dp").value)||0;
+  const mktF   = document.getElementById("ev-mkt-filter").value;
+
+  evFiltered = rawEV.filter(r=>{
+    const ev = r.evsByMethod[method];
+    if(ev==null) return false;
+    if(ev < minEvF || ev > maxEvF) return false;
+    if(minDp>0 && (r.dataPoints||0) < minDp) return false;
+    if(mktF && r.mkt !== mktF) return false;
+    // Odds filter: convert american to decimal comparison
+    if(minOddsRaw!==""){
+      const minO=parseFloat(minOddsRaw);
+      if(!isNaN(minO) && r.rawOdds < minO) return false;
+    }
+    if(maxOddsRaw!==""){
+      const maxO=parseFloat(maxOddsRaw);
+      if(!isNaN(maxO) && r.rawOdds > maxO) return false;
+    }
+    if(q && !(r.game+r.name+r.book+r.mkt).toLowerCase().includes(q)) return false;
+    return true;
+  });
   evFiltered.sort((a,b)=>(b.evsByMethod[method]||0)-(a.evsByMethod[method]||0));
   document.getElementById("ev-badge").textContent=`${evFiltered.length} found`;
   document.getElementById("ev-content").classList.remove("hidden");
   const tbody=document.getElementById("ev-tbody");tbody.innerHTML="";
-  if(!evFiltered.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted2)">No +EV bets found. Try lowering Min EV% or scanning more markets.</td></tr>`;return}
+  if(!evFiltered.length){tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted2)">No bets match current filters. Try adjusting Min EV%, odds range, or data point threshold.</td></tr>`;return}
   evFiltered.forEach(r=>{
     const ev=r.evsByMethod[method];
     const fp=r.fairByMethod[method];
     const cls=ev>=5?"ev-hot":ev>=2?"ev-good":"ev-low";
+    const dp=r.dataPoints||0;
+    const dpCls=dp>=7?"dp-high":dp>=4?"dp-med":"dp-low";
+    const dpLabel=dp>=7?"Strong":dp>=4?"Moderate":"Thin";
     const tr=document.createElement("tr");
-    tr.className="clickrow"; tr.title="Click to send to Bet Tracker";
-    tr.onclick=()=>prefillTracker(r,method);
+    tr.className="clickrow"; tr.title="Click to send to Bet Tracker & Fair Value";
+    tr.onclick=()=>{ prefillTracker(r,method); prefillFV(r,method); };
     tr.innerHTML=`
       <td><div class="game">${r.game}</div><span class="mkt-tag">${r.mkt}</span></td>
       <td class="dt">${r.time}</td>
@@ -833,11 +1043,11 @@ function renderEV(){
       <td class="odds-val">${r.odds}</td>
       <td>${fp!=null?(fp*100).toFixed(2)+"%":"—"}</td>
       <td><span class="${cls}">+${ev.toFixed(2)}%</span></td>
+      <td><span class="dp-count ${dpCls}">${dp} <span style="font-weight:400;font-size:9px">${dpLabel}</span></span></td>
       <td class="odds-val">$${r.kellyStake}</td>`;
     tbody.appendChild(tr);
   });
 }
-function filterEV(){ renderEV() }
 
 // ── ARB ──
 function renderArb(){
@@ -1017,12 +1227,227 @@ function exportCSV(type){
   a.download=filename; a.click();
 }
 
+
+// ══ FAIR VALUE ═══════════════════════════════════════════════════════════════
+let fvConsensusData = []; // populated from rawProb after scan
+
+function prefillFV(r, method){
+  document.getElementById("fv-name").value = r.name + (r.point!=null?` (${r.point>0?"+":""}${r.point})`:"") + " — " + r.game;
+  document.getElementById("fv-ref-odds").value = r.rawOdds;
+  document.getElementById("fv-ref-book").value = SHARP_BOOKS.includes(r.book) ? r.book : "custom";
+  // try to find opposing side odds from allBookOdds context
+  calcFV();
+  // populate consensus dropdown with matching outcomes
+  populateFVConsensus(r.name, r.game, r.mkt);
+  showPanel("fv");
+}
+
+function calcFV(){
+  const refOdds = parseFloat(document.getElementById("fv-ref-odds").value);
+  const oppOdds = parseFloat(document.getElementById("fv-opp-odds").value);
+  const method  = document.getElementById("fv-method").value;
+
+  if(isNaN(refOdds)){ document.getElementById("fv-result").style.display="none"; updateMethodGrid(null,null,null,null); return; }
+
+  const refImpl = toImpl(refOdds);
+  const oppImpl = isNaN(oppOdds) ? (1 - refImpl) : toImpl(oppOdds); // fallback: assume binary market
+
+  const probs = [refImpl, oppImpl];
+  const totalImpl = probs.reduce((a,b)=>a+b,0);
+  const vigPctVal = ((totalImpl - 1)*100).toFixed(2);
+
+  const addF = devigAdd([...probs]);
+  const mulF = devigMul([...probs]);
+  const powF = devigPow([...probs]);
+
+  const fairProbs = { add: addF[0], mul: mulF[0], pow: powF[0] };
+  const selectedFair = fairProbs[method];
+
+  // Fair odds = 1/fair_prob expressed as american
+  function toAmerican(p){ const d=1/p; return d>=2 ? Math.round((d-1)*100) : Math.round(-100/(d-1)) }
+  const fairOddsAm = toAmerican(selectedFair);
+  const noVigOdds  = toAmerican(mulF[0]);
+
+  document.getElementById("fv-impl").textContent = (refImpl*100).toFixed(2)+"%";
+  document.getElementById("fv-vig").textContent  = vigPctVal+"%";
+  document.getElementById("fv-fair-pow").textContent = (powF[0]*100).toFixed(2)+"%";
+  document.getElementById("fv-fair-mul").textContent = (mulF[0]*100).toFixed(2)+"%";
+  document.getElementById("fv-fair-add").textContent = (addF[0]*100).toFixed(2)+"%";
+  document.getElementById("fv-fair-odds").textContent = fmtAm(fairOddsAm);
+  document.getElementById("fv-novig").textContent = fmtAm(noVigOdds);
+  document.getElementById("fv-result").style.display="block";
+
+  updateMethodGrid(powF[0], mulF[0], addF[0], null);
+
+  // Book comparison — compare entered fair prob vs all books in scan for this outcome
+  buildBookComparison(selectedFair);
+}
+
+function updateMethodGrid(pow, mul, add, pin){
+  const grid = document.getElementById("fv-method-grid");
+  const fmt = p => p!=null ? (p*100).toFixed(2)+"%" : "—";
+  const fmtO = p => p!=null ? fmtAm(Math.round(p>=0.5 ? -(p/(1-p))*100 : ((1-p)/p)*100)) : "—";
+  grid.innerHTML = `
+    <div class="mc-card"><div class="mc-method" style="color:var(--green)">📌 Pinnacle</div>
+      <div class="mc-prob" style="color:${pin?"var(--green)":"var(--muted2)"}">${fmt(pin)}</div>
+      <div class="mc-odds">${pin?fmtO(pin):"No Pinnacle line"}</div></div>
+    <div class="mc-card"><div class="mc-method" style="color:var(--purple)">⚡ Power</div>
+      <div class="mc-prob" style="color:${pow?"var(--purple)":"var(--muted2)"}">${fmt(pow)}</div>
+      <div class="mc-odds">${pow?fmtO(pow):"—"}</div></div>
+    <div class="mc-card"><div class="mc-method" style="color:var(--cyan)">✖ Mult.</div>
+      <div class="mc-prob" style="color:${mul?"var(--cyan)":"var(--muted2)"}">${fmt(mul)}</div>
+      <div class="mc-odds">${mul?fmtO(mul):"—"}</div></div>
+    <div class="mc-card"><div class="mc-method" style="color:var(--blue)">➕ Add.</div>
+      <div class="mc-prob" style="color:${add?"var(--blue)":"var(--muted2)"}">${fmt(add)}</div>
+      <div class="mc-odds">${add?fmtO(add):"—"}</div></div>`;
+}
+
+function buildBookComparison(fairProb){
+  if(!fairProb) return;
+  // Find all books pricing this outcome from rawProb
+  const nameVal = document.getElementById("fv-name").value.toLowerCase();
+  const matchingRows = rawProb.filter(r=> nameVal.includes(r.name.toLowerCase()) || r.name.toLowerCase().includes(nameVal.split("—")[0].trim().toLowerCase()));
+
+  if(!matchingRows.length){
+    document.getElementById("fv-compare-empty").style.display="block";
+    document.getElementById("fv-book-compare").style.display="none";
+    return;
+  }
+
+  // Gather all book odds for this outcome
+  const bookOddsMap = {};
+  matchingRows.forEach(r=>{
+    if(!bookOddsMap[r.bestBook]) bookOddsMap[r.bestBook] = r.bestPrice;
+  });
+
+  const rows = Object.entries(bookOddsMap).map(([book, price])=>{
+    const dec = toDec(price);
+    const impl = toImpl(price);
+    const ev = evPct(fairProb, dec);
+    return {book, price, impl, ev};
+  }).sort((a,b)=>b.ev-a.ev);
+
+  if(!rows.length){
+    document.getElementById("fv-compare-empty").style.display="block";
+    document.getElementById("fv-book-compare").style.display="none";
+    return;
+  }
+
+  const maxAbsEV = Math.max(...rows.map(r=>Math.abs(r.ev)), 10);
+  document.getElementById("fv-compare-empty").style.display="none";
+  document.getElementById("fv-book-compare").style.display="block";
+  const container = document.getElementById("fv-book-rows");
+  container.innerHTML = rows.map(r=>{
+    const barW = Math.min(Math.abs(r.ev)/maxAbsEV*100, 100).toFixed(1);
+    const barCls = r.ev>0.5?"pos":r.ev<-0.5?"neg":"neutral";
+    const evCls  = r.ev>0.5?"pos":r.ev<-0.5?"neg":"neutral";
+    return `<div class="book-compare-row">
+      <span class="bcr-book">${SHORT[r.book]||r.book}</span>
+      <span class="bcr-odds">${fmtAm(r.price)}</span>
+      <div class="bcr-bar-wrap"><div class="bcr-bar ${barCls}" style="width:${barW}%"></div></div>
+      <span class="bcr-ev ${evCls}">${r.ev>=0?"+":""}${r.ev.toFixed(2)}%</span>
+    </div>`;
+  }).join("");
+}
+
+// Consensus dropdown population
+function populateFVConsensus(name, game, mkt){
+  const sel = document.getElementById("fv-consensus-select");
+  // Find unique outcome/game combos in rawProb
+  const options = [];
+  const seen = new Set();
+  rawProb.forEach(r=>{
+    const key = `${r.name}||${r.game}||${r.mkt}`;
+    if(!seen.has(key)){
+      seen.add(key);
+      options.push({key, label:`${r.name} — ${r.game} (${r.mkt})`, name:r.name, game:r.game, mkt:r.mkt});
+    }
+  });
+  sel.innerHTML = '<option value="">— Select outcome —</option>' +
+    options.map(o=>`<option value="${o.key}" ${o.name===name&&o.game===game?"selected":""}>${o.label}</option>`).join("");
+  if(name && game) loadConsensus();
+}
+
+function filterFVConsensus(){
+  const q = document.getElementById("fv-search").value.toLowerCase();
+  const sel = document.getElementById("fv-consensus-select");
+  const seen = new Set();
+  const options = [];
+  rawProb.forEach(r=>{
+    const key = `${r.name}||${r.game}||${r.mkt}`;
+    if(!seen.has(key) && (r.name+r.game+r.mkt).toLowerCase().includes(q)){
+      seen.add(key);
+      options.push({key, label:`${r.name} — ${r.game} (${r.mkt})`});
+    }
+  });
+  sel.innerHTML = '<option value="">— Select outcome —</option>' +
+    options.map(o=>`<option value="${o.key}">${o.label}</option>`).join("");
+}
+
+function loadConsensus(){
+  const val = document.getElementById("fv-consensus-select").value;
+  if(!val){ document.getElementById("fv-consensus-empty").classList.remove("hidden"); document.getElementById("fv-consensus-content").classList.add("hidden"); return; }
+  const [name, game, mkt] = val.split("||");
+  const rows = rawProb.filter(r=>r.name===name && r.game===game && r.mkt===mkt);
+  if(!rows.length) return;
+  const r = rows[0];
+
+  // Use best available fair prob
+  const fairProb = r.pinProb || r.powProb || r.mulProb;
+  if(!fairProb) return;
+
+  // Get all books from rawScreen for this outcome
+  const screenRows = rawScreen.filter(x=>x.outcome===name && x.game===game);
+  const allBooks = screenRows.length ? screenRows[0].books : [];
+
+  // Stats
+  const bestOdds = allBooks.length ? allBooks[0].price : r.bestPrice;
+  const worstOdds = allBooks.length ? allBooks[allBooks.length-1].price : r.bestPrice;
+  const spread = bestOdds - worstOdds;
+  const fairOddsAm = fairProb ? (()=>{const d=1/fairProb; return d>=2?Math.round((d-1)*100):Math.round(-100/(d-1))})() : 0;
+
+  document.getElementById("fv-consensus-stats").innerHTML = `
+    <div class="sc"><div class="sc-l">Fair Prob (Power)</div><div class="sc-v p">${(fairProb*100).toFixed(2)}%</div></div>
+    <div class="sc"><div class="sc-l">Fair Odds</div><div class="sc-v a">${fmtAm(fairOddsAm)}</div></div>
+    <div class="sc"><div class="sc-l">Best Available</div><div class="sc-v g">${fmtAm(bestOdds)}</div></div>
+    <div class="sc"><div class="sc-l">Worst Available</div><div class="sc-v r">${fmtAm(worstOdds)}</div></div>
+    <div class="sc"><div class="sc-l">Line Spread</div><div class="sc-v">${spread} pts</div></div>
+    <div class="sc"><div class="sc-l">Market Vig</div><div class="sc-v">${r.vig}%</div></div>`;
+
+  const tbody = document.getElementById("fv-consensus-tbody");
+  tbody.innerHTML = "";
+  const booksToShow = allBooks.length ? allBooks : [{book:r.bestBook,price:r.bestPrice}];
+  booksToShow.forEach((b,i)=>{
+    const dec = toDec(b.price);
+    const impl = toImpl(b.price);
+    const evVal = evPct(fairProb, dec);
+    const evCls = evVal>=5?"ev-hot":evVal>=2?"ev-good":evVal>=0?"ev-low":"ev-neg";
+    const edgeTxt = evVal>2?"🟢 Edge":evVal>0?"🟡 Slight edge":evVal>-3?"⚪ Fair":"🔴 Avoid";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><span class="book-tag ${SHARP_BOOKS.includes(b.book)?"" :""}">${BOOK_LABELS_FULL[b.book]||SHORT[b.book]||b.book}${SHARP_BOOKS.includes(b.book)?'<span style="color:var(--cyan);font-size:9px"> SHARP</span>':""}</span></td>
+      <td class="odds-val">${fmtAm(b.price)}</td>
+      <td>${(impl*100).toFixed(2)}%</td>
+      <td>${(fairProb*100).toFixed(2)}%</td>
+      <td><span class="${evCls}">${evVal>=0?"+":""}${evVal.toFixed(2)}%</span></td>
+      <td>${edgeTxt}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("fv-consensus-empty").classList.add("hidden");
+  document.getElementById("fv-consensus-content").classList.remove("hidden");
+}
+
+const BOOK_LABELS_FULL = {draftkings:"DraftKings",fanduel:"FanDuel",betmgm:"BetMGM",caesars:"Caesars",
+  pointsbet:"PointsBet",bet365:"Bet365",betrivers:"BetRivers",unibet:"Unibet",superbook:"SuperBook",
+  pinnacle:"Pinnacle",circa:"Circa",bookmaker:"Bookmaker"};
+
 // ══ NAV ══════════════════════════════════════════════════════════════════════
 function showPanel(id){
   document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
   document.querySelectorAll(".ntab").forEach(t=>t.classList.remove("on"));
   document.getElementById("panel-"+id).classList.add("on");
-  const idx={prob:0,ev:1,arb:2,screen:3,kelly:4,tracker:5}[id];
+  const idx={prob:0,ev:1,arb:2,screen:3,fv:4,kelly:5,tracker:6}[id];
   document.querySelectorAll(".ntab")[idx].classList.add("on");
   if(id==="tracker") renderTracker();
 }
