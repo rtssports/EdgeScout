@@ -263,9 +263,19 @@ td{padding:9px 11px;vertical-align:middle}
 <!-- SETTINGS -->
 <div class="cfg">
   <div class="f">
-    <label class="lbl">Odds API Key</label>
-    <input type="password" id="api-key" placeholder="Paste your key…" style="width:260px"/>
-    <a class="klink" href="https://the-odds-api.com" target="_blank">→ Free key at the-odds-api.com</a>
+    <label class="lbl">Provider</label>
+    <select id="api-provider" onchange="onProviderChange()" style="width:160px">
+      <option value="theodds">The Odds API</option>
+      <option value="parlay">ParlayAPI</option>
+    </select>
+
+  </div>
+  <div class="f">
+    <label class="lbl">API Key</label>
+    <select id="api-key-select" onchange="onKeySelect()" style="width:230px">
+      <option value="">— Select or paste a key —</option>
+    </select>
+    <input type="password" id="api-key-input" placeholder="Paste new key…" style="width:230px;margin-top:4px" onchange="saveKey()"/>
   </div>
   <div class="f">
     <label class="lbl">Min EV %</label>
@@ -686,18 +696,88 @@ function kellyF(fp,dec,frac){ const b=dec-1,q=1-fp; return Math.max(0,(b*fp-q)/b
 function evPct(fp,dec){ return (fp*(dec-1)-(1-fp))*100 }
 
 // ══ FETCH ════════════════════════════════════════════════════════════════════
+// ── KEY MANAGEMENT ──────────────────────────────────────────────────────────
+function storageKey(provider){ return `es_keys_${provider}`; }
+
+function getSavedKeys(provider){
+  return JSON.parse(localStorage.getItem(storageKey(provider)) || "[]");
+}
+
+function saveKey(){
+  const provider = document.getElementById("api-provider").value;
+  const val = document.getElementById("api-key-input").value.trim();
+  if(!val) return;
+  const keys = getSavedKeys(provider);
+  // Store masked label + actual value
+  const label = val.slice(0,6) + "••••••••" + val.slice(-4);
+  if(!keys.find(k=>k.value===val)){
+    keys.push({label, value:val});
+    localStorage.setItem(storageKey(provider), JSON.stringify(keys));
+  }
+  refreshKeyDropdown(provider, val);
+  document.getElementById("api-key-input").value = "";
+}
+
+function refreshKeyDropdown(provider, selectValue){
+  const sel = document.getElementById("api-key-select");
+  const keys = getSavedKeys(provider);
+  sel.innerHTML = '<option value="">— Select saved key —</option>' +
+    keys.map(k=>`<option value="${k.value}" ${k.value===selectValue?"selected":""}>${k.label}</option>`).join("") +
+    '<option value="__delete__" style="color:var(--red)">🗑 Remove selected key</option>';
+}
+
+function onKeySelect(){
+  const sel = document.getElementById("api-key-select");
+  if(sel.value === "__delete__"){
+    deleteSelectedKey();
+    sel.value = "";
+  }
+}
+
+function deleteSelectedKey(){
+  const provider = document.getElementById("api-provider").value;
+  const sel = document.getElementById("api-key-select");
+  // Get the previously selected value before delete option was chosen
+  const keys = getSavedKeys(provider);
+  // Just remove last selected — prompt user to reselect
+  const prevVal = sel.options[sel.selectedIndex-1]?.value;
+  if(prevVal){
+    const updated = keys.filter(k=>k.value!==prevVal);
+    localStorage.setItem(storageKey(provider), JSON.stringify(updated));
+    refreshKeyDropdown(provider, "");
+  }
+}
+
+function getBaseURL(){
+  const provider = document.getElementById("api-provider").value;
+  return provider === "parlay" ? "https://parlay-api.com/v1" : "https://api.the-odds-api.com/v4";
+}
+
+function getActiveKey(){
+  const sel = document.getElementById("api-key-select");
+  const input = document.getElementById("api-key-input").value.trim();
+  return sel.value && sel.value !== "__delete__" ? sel.value : input;
+}
+
+function onProviderChange(){
+  const provider = document.getElementById("api-provider").value;
+  refreshKeyDropdown(provider, "");
+}
+
+// Init key dropdowns on load
+refreshKeyDropdown("theodds", "");
 async function fetchMarket(sport, market, apiKey){
+  const base = getBaseURL();
   // Player props & team totals have different endpoint pattern
   const isEvent = market==="player_props"||market==="team_totals";
   if(isEvent){
-    // First get events
-    const evRes = await fetch(`https://api.the-odds-api.com/v4/sports/${sport}/events?`+
+    const evRes = await fetch(`${base}/sports/${sport}/events?`+
       new URLSearchParams({apiKey}));
     if(!evRes.ok) return [];
     const events = await evRes.json();
     const rows = [];
-    for(const ev of events.slice(0,5)){ // limit to 5 events to save requests
-      const url = `https://api.the-odds-api.com/v4/sports/${sport}/events/${ev.id}/odds?`+
+    for(const ev of events.slice(0,5)){
+      const url = `${base}/sports/${sport}/events/${ev.id}/odds?`+
         new URLSearchParams({apiKey,regions:"us",markets:market,oddsFormat:"american",bookmakers:ALL_BOOKS.join(",")});
       const r = await fetch(url);
       if(!r.ok) continue;
@@ -707,7 +787,7 @@ async function fetchMarket(sport, market, apiKey){
     }
     return rows;
   }
-  const url = `https://api.the-odds-api.com/v4/sports/${sport}/odds?`+
+  const url = `${base}/sports/${sport}/odds?`+
     new URLSearchParams({apiKey,regions:"us",markets:market,oddsFormat:"american",bookmakers:ALL_BOOKS.join(",")});
   const r = await fetch(url);
   if(!r.ok){
@@ -726,11 +806,12 @@ function updateReqs(r){
 
 // ══ SCAN ════════════════════════════════════════════════════════════════════
 async function runScan(){
-  const apiKey   = document.getElementById("api-key").value.trim();
+  const apiKey   = getActiveKey();
+  const provider = document.getElementById("api-provider").value;
   const minEv    = parseFloat(document.getElementById("min-ev").value)||0;
   const bankroll = parseFloat(document.getElementById("bankroll").value)||1000;
   clearErr();
-  if(!apiKey){setErr("Please enter your API key.");return}
+  if(!apiKey){setErr(`Please enter your ${provider==="parlay"?"ParlayAPI":"The Odds API"} key.`);return}
   if(!selectedSports.length){setErr("Select at least one sport.");return}
   if(!selectedMarkets.length){setErr("Select at least one market.");return}
 
